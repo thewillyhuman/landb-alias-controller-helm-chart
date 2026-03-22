@@ -6,6 +6,12 @@ All notable changes to the LanDB Alias Controller Helm Chart are listed here by 
 
 ## Versions
 
+### 0.0.2
+
+- (fab2699) chore: update default operator version to v0.0.2 — Guillermo Facundo Colunga
+- (5b34f82) Add version to quick start install commands — Guillermo Facundo Colunga
+- (614d133) Update CHANGELOG for 0.0.1 release — Guillermo Facundo Colunga
+
 ### 0.0.1
 
 - (8c86b55) Add Helm chart for landb-alias-controller — Guillermo Facundo Colunga
