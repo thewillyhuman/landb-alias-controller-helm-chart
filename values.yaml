@@ -1,0 +1,105 @@
+# -- Number of pod replicas
+replicaCount: 1
+
+image:
+  # -- Container image repository
+  repository: gitlab-registry.cern.ch/gfacundo/landb-alias-controller
+  # -- Image pull policy
+  pullPolicy: IfNotPresent
+  # -- Overrides the image tag whose default is the chart appVersion
+  tag: "v0.0.1"
+
+# -- Secrets for pulling images from private registries
+imagePullSecrets: []
+# -- Override the default chart name used in resource names
+nameOverride: ""
+# -- Override the full resource name prefix
+fullnameOverride: ""
+
+serviceAccount:
+  # -- Whether to create a ServiceAccount
+  create: true
+  # -- Annotations to add to the ServiceAccount
+  annotations: {}
+  # -- Name of the ServiceAccount. If not set, a name is generated from the fullname template
+  name: ""
+
+rbac:
+  # -- Whether to create ClusterRole and ClusterRoleBinding for the controller
+  create: true
+
+# -- Container arguments passed to the controller binary.
+# The controller accepts the following flags:
+#   --provider              - DNS provider to use (default "openstack")
+#   --ingress-node-label    - Kubernetes label identifying ingress nodes
+#                             (default "node-role.kubernetes.io/ingress")
+#   --zap-log-level         - Log level: debug, info, error (default "info")
+#   --zap-devel             - Enable development-mode logging (default false)
+args:
+  - "--provider=openstack"
+  - "--ingress-node-label=node-role.kubernetes.io/ingress"
+  - "--zap-log-level=info"
+
+podMonitor:
+  # -- Enable Prometheus PodMonitor for scraping /metrics
+  enabled: false
+  # -- Scrape interval (e.g. "30s"). Uses Prometheus default if empty
+  interval: ""
+  # -- Scrape timeout (e.g. "10s"). Uses Prometheus default if empty
+  scrapeTimeout: ""
+  # -- Additional labels for the PodMonitor (e.g. for Prometheus selector matching)
+  labels: {}
+
+resources:
+  requests:
+    # -- CPU request
+    cpu: 10m
+    # -- Memory request
+    memory: 64Mi
+  limits:
+    # -- Memory limit
+    memory: 64Mi
+
+# -- Container-level security context
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 65534
+  capabilities:
+    drop:
+      - ALL
+  readOnlyRootFilesystem: true
+
+# -- Pod-level security context
+podSecurityContext: {}
+
+# -- Node selector for pod scheduling
+nodeSelector:
+  kubernetes.io/os: linux
+
+# -- Tolerations for pod scheduling
+tolerations: []
+
+# -- Affinity rules for pod scheduling
+affinity: {}
+
+# -- Environment variables passed to the container.
+# Use this for non-sensitive configuration. OpenStack credentials should go in secretEnv or envFromSecret.
+env: {}
+
+# -- Sensitive environment variables. The chart creates a Secret automatically and mounts it via envFrom.
+# Use this for OpenStack credentials:
+secretEnv: {}
+  # OS_AUTH_URL: "https://keystone.cern.ch:5000/v3"
+  # OS_USERNAME: "svc-landb-ctrl"
+  # OS_PASSWORD: "changeme"
+  # OS_PROJECT_NAME: "my-project"
+  # OS_USER_DOMAIN_NAME: "Default"
+
+# -- Reference to an existing Secret for sensitive environment variables.
+# Can be used alongside secretEnv — both will be mounted via envFrom.
+envFromSecret: ""
+
+# -- Additional volumes to add to the pod
+extraVolumes: []
+# -- Additional volume mounts to add to the container
+extraVolumeMounts: []

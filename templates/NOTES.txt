@@ -1,0 +1,15 @@
+LANDB Alias Controller has been deployed.
+
+The controller watches Kubernetes Ingress resources and synchronizes
+DNS aliases to OpenStack server metadata for CERN's LANDB system.
+
+Verify the controller is running:
+  kubectl get pods -l app.kubernetes.io/name={{ include "landb-alias-controller.name" . }}
+
+View controller logs:
+  kubectl logs -l app.kubernetes.io/name={{ include "landb-alias-controller.name" . }} -f
+
+{{- if .Values.podMonitor.enabled }}
+
+Prometheus PodMonitor is enabled. Metrics are available at :8080/metrics.
+{{- end }}

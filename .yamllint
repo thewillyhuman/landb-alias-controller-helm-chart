@@ -1,0 +1,6 @@
+rules:
+  line-length: disable
+  indentation:
+    spaces: 2
+ignore:
+  - templates/*

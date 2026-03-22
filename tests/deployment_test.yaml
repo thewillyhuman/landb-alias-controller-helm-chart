@@ -1,0 +1,250 @@
+suite: test deployment
+templates:
+  - deployment.yaml
+tests:
+  - it: should render a Deployment by default
+    asserts:
+      - containsDocument:
+          kind: Deployment
+          apiVersion: apps/v1
+
+  - it: should use the default replica count
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 1
+
+  - it: should respect a custom replica count
+    set:
+      replicaCount: 3
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 3
+
+  - it: should use the appVersion as default image tag
+    asserts:
+      - matchRegex:
+          path: spec.template.spec.containers[0].image
+          pattern: "landb-alias-controller:v0\\.0\\.1$"
+
+  - it: should allow overriding the image tag
+    set:
+      image.tag: "v1.0.0"
+    asserts:
+      - matchRegex:
+          path: spec.template.spec.containers[0].image
+          pattern: "landb-alias-controller:v1\\.0\\.0$"
+
+  - it: should allow overriding the image repository
+    set:
+      image.repository: my-registry.example.com/landb-alias-controller
+    asserts:
+      - matchRegex:
+          path: spec.template.spec.containers[0].image
+          pattern: "^my-registry\\.example\\.com/landb-alias-controller:"
+
+  - it: should not expose any ports
+    asserts:
+      - notExists:
+          path: spec.template.spec.containers[0].ports
+
+  - it: should set default container args
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].args
+          content: "--provider=openstack"
+      - contains:
+          path: spec.template.spec.containers[0].args
+          content: "--ingress-node-label=node-role.kubernetes.io/ingress"
+      - contains:
+          path: spec.template.spec.containers[0].args
+          content: "--zap-log-level=info"
+
+  - it: should allow overriding container args
+    set:
+      args:
+        - "--provider=openstack"
+        - "--zap-log-level=debug"
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].args
+          content: "--zap-log-level=debug"
+
+  - it: should not have liveness or readiness probes
+    asserts:
+      - notExists:
+          path: spec.template.spec.containers[0].livenessProbe
+      - notExists:
+          path: spec.template.spec.containers[0].readinessProbe
+
+  - it: should not have env when env is empty
+    asserts:
+      - notExists:
+          path: spec.template.spec.containers[0].env
+
+  - it: should allow adding environment variables
+    set:
+      env:
+        LOG_LEVEL: "debug"
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: LOG_LEVEL
+            value: "debug"
+
+  - it: should mount envFromSecret when configured
+    set:
+      envFromSecret: my-secret
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            secretRef:
+              name: my-secret
+
+  - it: should not have envFrom when neither secretEnv nor envFromSecret is set
+    asserts:
+      - notExists:
+          path: spec.template.spec.containers[0].envFrom
+
+  - it: should include auto-created secret ref in envFrom when secretEnv is set
+    set:
+      secretEnv:
+        OS_PASSWORD: "changeme"
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            secretRef:
+              name: RELEASE-NAME-landb-alias-controller-env
+
+  - it: should support both secretEnv and envFromSecret in envFrom
+    set:
+      secretEnv:
+        OS_PASSWORD: "changeme"
+      envFromSecret: my-external-secret
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            secretRef:
+              name: RELEASE-NAME-landb-alias-controller-env
+      - contains:
+          path: spec.template.spec.containers[0].envFrom
+          content:
+            secretRef:
+              name: my-external-secret
+
+  - it: should set security context with readOnlyRootFilesystem
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.runAsNonRoot
+          value: true
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.runAsUser
+          value: 65534
+      - equal:
+          path: spec.template.spec.containers[0].securityContext.readOnlyRootFilesystem
+          value: true
+      - contains:
+          path: spec.template.spec.containers[0].securityContext.capabilities.drop
+          content: ALL
+
+  - it: should mount /tmp as emptyDir
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: tmp
+            mountPath: /tmp
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: tmp
+            emptyDir: {}
+
+  - it: should set default resource requests and limits
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].resources.requests.cpu
+          value: 10m
+      - equal:
+          path: spec.template.spec.containers[0].resources.requests.memory
+          value: 64Mi
+      - notExists:
+          path: spec.template.spec.containers[0].resources.limits.cpu
+      - equal:
+          path: spec.template.spec.containers[0].resources.limits.memory
+          value: 64Mi
+
+  - it: should set the default node selector
+    asserts:
+      - equal:
+          path: spec.template.spec.nodeSelector
+          value:
+            kubernetes.io/os: linux
+
+  - it: should support extra volumes and volume mounts
+    set:
+      extraVolumes:
+        - name: custom-config
+          configMap:
+            name: my-config
+      extraVolumeMounts:
+        - name: custom-config
+          mountPath: /etc/custom
+    asserts:
+      - contains:
+          path: spec.template.spec.volumes
+          content:
+            name: custom-config
+            configMap:
+              name: my-config
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: custom-config
+            mountPath: /etc/custom
+
+  - it: should support tolerations
+    set:
+      tolerations:
+        - key: "dedicated"
+          operator: "Equal"
+          value: "controller"
+          effect: "NoSchedule"
+    asserts:
+      - contains:
+          path: spec.template.spec.tolerations
+          content:
+            key: "dedicated"
+            operator: "Equal"
+            value: "controller"
+            effect: "NoSchedule"
+
+  - it: should support affinity
+    set:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - amd64
+    asserts:
+      - exists:
+          path: spec.template.spec.affinity.nodeAffinity
+
+  - it: should support imagePullSecrets
+    set:
+      imagePullSecrets:
+        - name: my-registry-secret
+    asserts:
+      - contains:
+          path: spec.template.spec.imagePullSecrets
+          content:
+            name: my-registry-secret

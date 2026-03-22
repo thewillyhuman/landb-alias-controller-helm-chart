@@ -1,0 +1,71 @@
+image: gitlab-registry.cern.ch/linuxsupport/alma9-base
+
+include:
+  - project: 'ci-tools/container-image-ci-templates'
+    file: 'helm.gitlab-ci.yml'
+    ref: master
+
+stages:
+  - lint
+  - validate
+  - test
+  - deploy
+
+docs_lint:
+  stage: lint
+  rules:
+    - if: '$CI_COMMIT_TAG'
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "push"
+  script:
+    - dnf install -y python-pip
+    - python3 -m pip install linkcheckmd
+    - python3 -m linkcheckmd -v README.md
+
+yaml_lint:
+  stage: lint
+  rules:
+    - if: '$CI_COMMIT_TAG'
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "push"
+  script:
+    - dnf install -y epel-release
+    - dnf install -y yamllint
+    - yamllint .
+
+helm_lint:
+  stage: lint
+  rules:
+    - if: '$CI_COMMIT_TAG'
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "push"
+  image: alpine/helm
+  script:
+    - helm lint --strict .
+
+helm_docs_needs_running:
+  stage: validate
+  image: registry.cern.ch/docker.io/jnorwood/helm-docs:v1.14.2
+  rules:
+    - if: '$CI_COMMIT_TAG'
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "push"
+  script:
+    - helm-docs -o test.md
+    - diff -ura test.md README.md
+
+unittest:
+  stage: test
+  image: registry.cern.ch/docker.io/helmunittest/helm-unittest:3.17.0-0.7.2
+  script:
+    - helm unittest -f 'tests/**/*.yaml' .
+
+helm_deploy:
+  stage: deploy
+  image: registry.cern.ch/docker.io/alpine/helm:3
+  rules:
+    - if: '$CI_COMMIT_TAG'
+  script: |
+    helm package .
+    echo ${REGISTRY_PASSWORD} | helm registry login registry.cern.ch -u $REGISTRY_USER --password-stdin
+    helm push landb-alias-controller-$CI_COMMIT_TAG.tgz oci://registry.cern.ch/gfacundo

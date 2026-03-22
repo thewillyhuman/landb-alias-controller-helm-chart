@@ -1,0 +1,108 @@
+The **LANDB Alias Controller Helm Chart** deploys the
+[LANDB Alias Controller](https://gitlab.cern.ch/gfacundo/landb-alias-controller)
+on Kubernetes. This controller watches Ingress resources and automatically
+synchronizes DNS aliases to OpenStack server metadata, enabling CERN's LANDB
+system to create corresponding DNS records without manual configuration.
+
+[[_TOC_]]
+
+## Quick Start
+
+```bash
+helm install landb-alias-controller oci://registry.cern.ch/gfacundo/landb-alias-controller \
+  --namespace kube-system \
+  --set secretEnv.OS_AUTH_URL="$OS_AUTH_URL" \
+  --set secretEnv.OS_USERNAME="$OS_USERNAME" \
+  --set secretEnv.OS_PASSWORD="$OS_PASSWORD" \
+  --set secretEnv.OS_PROJECT_NAME="$OS_PROJECT_NAME" \
+  --set secretEnv.OS_USER_DOMAIN_NAME="$OS_USER_DOMAIN_NAME"
+```
+
+## Configuration
+
+The controller requires OpenStack credentials to synchronize aliases. You can
+provide them directly via `secretEnv` (the chart creates a Secret for you):
+
+```yaml
+secretEnv:
+  OS_AUTH_URL: "https://keystone.cern.ch:5000/v3"
+  OS_USERNAME: "svc-landb-ctrl"
+  OS_PASSWORD: "changeme"
+  OS_PROJECT_NAME: "my-project"
+  OS_USER_DOMAIN_NAME: "Default"
+```
+
+Alternatively, reference a pre-existing Secret with `envFromSecret`:
+
+```yaml
+envFromSecret: "my-openstack-credentials"
+```
+
+Both options can be used together — all secrets are mounted via `envFrom`.
+
+### Controller Flags
+
+The controller binary accepts command-line flags configured via `args` in `values.yaml`:
+
+| Flag | Default | Description |
+|------|---------|-------------|
+| `--provider` | `openstack` | DNS provider to use |
+| `--ingress-node-label` | `node-role.kubernetes.io/ingress` | Label identifying ingress nodes |
+| `--zap-log-level` | `info` | Log level: `debug`, `info`, `error` |
+| `--zap-devel` | `false` | Enable development-mode logging |
+
+{{ template "chart.valuesSection" . }}
+
+## Contributing
+
+We welcome contributions! If you're interested in helping improve this project, please review our [contribution guidelines](CONTRIBUTING.md). In brief:
+
+1. **Fork** the repository.
+2. Create a **feature branch**.
+3. Implement, provide tests and validate your changes.
+4. Submit a **Merge Request (MR)** to the `master` branch.
+
+For a full contribution workflow, visit the [contribution guide](CONTRIBUTING.md).
+
+## Release Procedure
+
+This chart honours [semantic versioning](https://semver.org/). Follow this manual procedure to create a new release:
+
+### Bump the chart version
+
+- Open the `Chart.yaml` file in the root of the repository.
+- Update the `version`: field to the new release version (this must match the tag you will create — without any `v` prefix).
+
+  Example:
+
+  ```yaml
+  apiVersion: v2
+  name: landb-alias-controller
+  version: 1.2.3  # <--- Bump this version
+  ```
+
+- Commit the change:
+
+  ```bash
+  git add Chart.yaml
+  git commit -m "Bump chart version to 1.2.3"
+
+  # Push to master, or create a merge request from your release branch:
+  git push origin master
+  ```
+
+### Create and push the tag
+
+- Create an **annotated tag** matching the chart version (do not prefix with `v`):
+
+  ```bash
+  git tag -a 1.2.3 -m "1.2.3
+
+  - Change description.
+  - Change description."
+  git push origin 1.2.3
+  ```
+
+## License
+
+This repository is licensed under the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0). See the [LICENSE](LICENSE) file for more information.
