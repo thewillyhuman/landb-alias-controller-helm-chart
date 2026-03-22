@@ -9,7 +9,10 @@ system to create corresponding DNS records without manual configuration.
 ## Quick Start
 
 ```bash
+helm pull oci://registry.cern.ch/gfacundo/landb-alias-controller --version 0.0.1
+
 helm install landb-alias-controller oci://registry.cern.ch/gfacundo/landb-alias-controller \
+  --version 0.0.1 \
   --namespace kube-system \
   --set secretEnv.OS_AUTH_URL="$OS_AUTH_URL" \
   --set secretEnv.OS_USERNAME="$OS_USERNAME" \
