@@ -2,6 +2,6 @@ apiVersion: v2
 name: landb-alias-controller
 description: A Helm chart for deploying the LANDB Alias Controller
 type: application
-version: 0.0.4
-appVersion: "v0.0.2"
+version: 0.0.5
+appVersion: "v0.0.5"
 kubeVersion: ">=1.27.0-0"
