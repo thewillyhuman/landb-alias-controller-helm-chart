@@ -11,3 +11,4 @@ document, and support the project.
 Contributors to the LanDB Alias Controller Helm Chart repository:
 
 - Guillermo Facundo Colunga <guillermo.facundo.colunga@cern.ch>
+- Luis Pigueiras <luis.pigueiras@cern.ch>
