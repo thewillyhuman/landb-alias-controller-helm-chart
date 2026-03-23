@@ -6,6 +6,12 @@ All notable changes to the LanDB Alias Controller Helm Chart are listed here by 
 
 ## Versions
 
+### 0.0.3
+
+- (b7b92dd) chore: update controller image tag to v0.0.3 — Guillermo Facundo Colunga
+- (d29bd1e) docs: udate README.md to latest operator tag — Guillermo Facundo Colunga
+- (fce0129) chore: update CHANGELOG.md — Guillermo Facundo Colunga
+
 ### 0.0.2
 
 - (fab2699) chore: update default operator version to v0.0.2 — Guillermo Facundo Colunga
