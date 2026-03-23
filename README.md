@@ -67,7 +67,7 @@ The controller binary accepts command-line flags configured via `args` in `value
 | fullnameOverride | string | `""` | Override the full resource name prefix |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
 | image.repository | string | `"gitlab-registry.cern.ch/gfacundo/landb-alias-controller"` | Container image repository |
-| image.tag | string | `"v0.0.2"` | Overrides the image tag whose default is the chart appVersion |
+| image.tag | string | `"v0.0.3"` | Overrides the image tag whose default is the chart appVersion |
 | imagePullSecrets | list | `[]` | Secrets for pulling images from private registries |
 | nameOverride | string | `""` | Override the default chart name used in resource names |
 | nodeSelector | object | `{"kubernetes.io/os":"linux"}` | Node selector for pod scheduling |
