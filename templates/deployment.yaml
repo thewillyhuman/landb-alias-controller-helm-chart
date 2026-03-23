@@ -27,9 +27,14 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ include "landb-alias-controller.imageTag" . }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          {{- with .Values.args }}
+          {{- if or .Values.args .Values.cloudConfig.enabled }}
           args:
+            {{- with .Values.args }}
             {{- toYaml . | nindent 12 }}
+            {{- end }}
+            {{- if .Values.cloudConfig.enabled }}
+            - "--cloud-config-secret={{ .Values.cloudConfig.namespace }}/{{ .Values.cloudConfig.name }}"
+            {{- end }}
           {{- end }}
           {{- if .Values.env }}
           env:

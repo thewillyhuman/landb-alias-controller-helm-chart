@@ -248,3 +248,26 @@ tests:
           path: spec.template.spec.imagePullSecrets
           content:
             name: my-registry-secret
+
+  - it: should add cloud-config-secret arg by default
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].args
+          content: "--cloud-config-secret=kube-system/cloud-config"
+
+  - it: should not add cloud-config-secret arg when cloudConfig is disabled
+    set:
+      cloudConfig.enabled: false
+    asserts:
+      - notContains:
+          path: spec.template.spec.containers[0].args
+          content: "--cloud-config-secret=kube-system/cloud-config"
+
+  - it: should use custom cloud-config namespace and name in arg
+    set:
+      cloudConfig.namespace: custom-ns
+      cloudConfig.name: my-secret
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].args
+          content: "--cloud-config-secret=custom-ns/my-secret"

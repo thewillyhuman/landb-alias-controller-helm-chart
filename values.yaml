@@ -33,6 +33,7 @@ rbac:
 #   --provider              - DNS provider to use (default "openstack")
 #   --ingress-node-label    - Kubernetes label identifying ingress nodes
 #                             (default "node-role.kubernetes.io/ingress")
+#   --cloud-config-secret   - Read OpenStack credentials from a K8s secret (format: namespace/name)
 #   --zap-log-level         - Log level: debug, info, error (default "info")
 #   --zap-devel             - Enable development-mode logging (default false)
 args:
@@ -98,6 +99,15 @@ secretEnv: {}
 # -- Reference to an existing Secret for sensitive environment variables.
 # Can be used alongside secretEnv — both will be mounted via envFrom.
 envFromSecret: ""
+
+cloudConfig:
+  # -- Read OpenStack credentials from the cloud-config secret in kube-system.
+  # When enabled, secretEnv/envFromSecret for OS_* variables are not required.
+  enabled: true
+  # -- Namespace of the cloud-config secret
+  namespace: kube-system
+  # -- Name of the cloud-config secret
+  name: cloud-config
 
 # -- Additional volumes to add to the pod
 extraVolumes: []

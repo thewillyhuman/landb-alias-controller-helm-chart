@@ -1,0 +1,78 @@
+suite: test cloud-config RBAC
+templates:
+  - cloud-config-rbac.yaml
+tests:
+  - it: should render Role and RoleBinding by default
+    asserts:
+      - hasDocuments:
+          count: 2
+
+  - it: should not render when cloudConfig is disabled
+    set:
+      cloudConfig.enabled: false
+    asserts:
+      - hasDocuments:
+          count: 0
+
+  - it: should create a Role in kube-system namespace
+    documentIndex: 0
+    asserts:
+      - containsDocument:
+          kind: Role
+          apiVersion: rbac.authorization.k8s.io/v1
+      - equal:
+          path: metadata.namespace
+          value: kube-system
+
+  - it: should restrict Role to get on the cloud-config secret
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: rules[0].resources
+          value: ["secrets"]
+      - equal:
+          path: rules[0].resourceNames
+          value: ["cloud-config"]
+      - equal:
+          path: rules[0].verbs
+          value: ["get"]
+
+  - it: should create a RoleBinding in kube-system namespace
+    documentIndex: 1
+    asserts:
+      - containsDocument:
+          kind: RoleBinding
+          apiVersion: rbac.authorization.k8s.io/v1
+      - equal:
+          path: metadata.namespace
+          value: kube-system
+
+  - it: should bind to the controller service account
+    documentIndex: 1
+    asserts:
+      - equal:
+          path: subjects[0].kind
+          value: ServiceAccount
+      - equal:
+          path: subjects[0].namespace
+          value: NAMESPACE
+
+  - it: should respect custom secret namespace and name
+    set:
+      cloudConfig.namespace: custom-ns
+      cloudConfig.name: my-cloud-config
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: metadata.namespace
+          value: custom-ns
+      - equal:
+          path: rules[0].resourceNames
+          value: ["my-cloud-config"]
+
+  - it: should not render when rbac.create is false
+    set:
+      rbac.create: false
+    asserts:
+      - hasDocuments:
+          count: 0

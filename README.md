@@ -8,12 +8,28 @@ system to create corresponding DNS records without manual configuration.
 
 ## Quick Start
 
-```bash
-helm pull oci://registry.cern.ch/gfacundo/landb-alias-controller --version 0.0.4
+### Using the cluster's cloud-config (default)
 
+On Magnum-created clusters, a `cloud-config` secret with OpenStack credentials
+already exists in `kube-system`. The controller uses it by default — no
+credential configuration needed:
+
+```bash
+helm install landb-alias-controller oci://registry.cern.ch/gfacundo/landb-alias-controller \
+  --version 0.0.4 \
+  --namespace kube-system
+```
+
+### Using explicit credentials
+
+To use explicit credentials instead of cloud-config, disable `cloudConfig` and
+provide credentials via `secretEnv`:
+
+```bash
 helm install landb-alias-controller oci://registry.cern.ch/gfacundo/landb-alias-controller \
   --version 0.0.4 \
   --namespace kube-system \
+  --set cloudConfig.enabled=false \
   --set secretEnv.OS_AUTH_URL="$OS_AUTH_URL" \
   --set secretEnv.OS_USERNAME="$OS_USERNAME" \
   --set secretEnv.OS_PASSWORD="$OS_PASSWORD" \
@@ -23,8 +39,34 @@ helm install landb-alias-controller oci://registry.cern.ch/gfacundo/landb-alias-
 
 ## Configuration
 
-The controller requires OpenStack credentials to synchronize aliases. You can
-provide them directly via `secretEnv` (the chart creates a Secret for you):
+### Authentication
+
+The controller requires OpenStack credentials to synchronize aliases. Three
+options are available:
+
+#### Option 1: Cloud-Config Secret (default)
+
+By default, the controller reads credentials from the `cloud-config` secret
+that Magnum creates in `kube-system`. This uses trust-based authentication and
+requires no manual credential setup.
+
+The chart automatically creates a Role and RoleBinding in `kube-system`
+granting the controller's service account permission to read the secret. The
+namespace and secret name are configurable:
+
+```yaml
+cloudConfig:
+  enabled: true             # default
+  namespace: kube-system    # default
+  name: cloud-config        # default
+```
+
+To disable cloud-config authentication and use environment variables instead,
+set `cloudConfig.enabled: false`.
+
+#### Option 2: Inline Secret
+
+Provide credentials directly via `secretEnv` (the chart creates a Secret for you):
 
 ```yaml
 secretEnv:
@@ -35,13 +77,15 @@ secretEnv:
   OS_USER_DOMAIN_NAME: "Default"
 ```
 
-Alternatively, reference a pre-existing Secret with `envFromSecret`:
+#### Option 3: External Secret Reference
+
+Reference a pre-existing Secret with `envFromSecret`:
 
 ```yaml
 envFromSecret: "my-openstack-credentials"
 ```
 
-Both options can be used together — all secrets are mounted via `envFrom`.
+Options 2 and 3 can be used together — all secrets are mounted via `envFrom`.
 
 ### Controller Flags
 
@@ -51,6 +95,7 @@ The controller binary accepts command-line flags configured via `args` in `value
 |------|---------|-------------|
 | `--provider` | `openstack` | DNS provider to use |
 | `--ingress-node-label` | `node-role.kubernetes.io/ingress` | Label identifying ingress nodes |
+| `--cloud-config-secret` | | Read credentials from a K8s secret (`namespace/name`) |
 | `--zap-log-level` | `info` | Log level: `debug`, `info`, `error` |
 | `--zap-devel` | `false` | Enable development-mode logging |
 
@@ -59,7 +104,10 @@ The controller binary accepts command-line flags configured via `args` in `value
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` | Affinity rules for pod scheduling |
-| args | list | `["--provider=openstack","--ingress-node-label=node-role.kubernetes.io/ingress","--zap-log-level=info"]` | Container arguments passed to the controller binary. The controller accepts the following flags:   --provider              - DNS provider to use (default "openstack")   --ingress-node-label    - Kubernetes label identifying ingress nodes                             (default "node-role.kubernetes.io/ingress")   --zap-log-level         - Log level: debug, info, error (default "info")   --zap-devel             - Enable development-mode logging (default false) |
+| args | list | `["--provider=openstack","--ingress-node-label=node-role.kubernetes.io/ingress","--zap-log-level=info"]` | Container arguments passed to the controller binary |
+| cloudConfig.enabled | bool | `true` | Read OpenStack credentials from the cloud-config secret. When enabled, secretEnv/envFromSecret for OS_* variables are not required |
+| cloudConfig.name | string | `"cloud-config"` | Name of the cloud-config secret |
+| cloudConfig.namespace | string | `"kube-system"` | Namespace of the cloud-config secret |
 | env | object | `{}` | Environment variables passed to the container. Use this for non-sensitive configuration. OpenStack credentials should go in secretEnv or envFromSecret. |
 | envFromSecret | string | `""` | Reference to an existing Secret for sensitive environment variables. Can be used alongside secretEnv — both will be mounted via envFrom. |
 | extraVolumeMounts | list | `[]` | Additional volume mounts to add to the container |
