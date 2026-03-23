@@ -28,7 +28,7 @@ provide them directly via `secretEnv` (the chart creates a Secret for you):
 
 ```yaml
 secretEnv:
-  OS_AUTH_URL: "https://keystone.cern.ch:5000/v3"
+  OS_AUTH_URL: "https://keystone.cern.ch/v3"
   OS_USERNAME: "svc-landb-ctrl"
   OS_PASSWORD: "changeme"
   OS_PROJECT_NAME: "my-project"
