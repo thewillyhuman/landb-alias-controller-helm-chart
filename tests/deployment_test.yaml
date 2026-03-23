@@ -26,7 +26,7 @@ tests:
     asserts:
       - matchRegex:
           path: spec.template.spec.containers[0].image
-          pattern: "landb-alias-controller:v0\\.0\\.3$"
+          pattern: "landb-alias-controller:v0\\.0\\.4$"
 
   - it: should allow overriding the image tag
     set:
