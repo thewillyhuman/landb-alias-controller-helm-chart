@@ -6,6 +6,18 @@ All notable changes to the LanDB Alias Controller Helm Chart are listed here by 
 
 ## Versions
 
+### 0.0.6
+
+- (9f51d31) operator: update tag image to v0.0.6 — Guillermo Facundo Colunga
+- (0a1af82) feat: update default args for multi-label ingress node selection — Guillermo Facundo Colunga
+
+### 0.0.5
+
+- (2d54fc9) docs: update README template with cloud-config authentication — Guillermo Facundo Colunga
+- (ffa397d) chore: bump controller image tag to v0.0.5 — Guillermo Facundo Colunga
+- (e75f671) feat: support cloud-config secret authentication — Guillermo Facundo Colunga
+- (554b525) chore: update CHANGELOG.md — Guillermo Facundo Colunga
+
 ### 0.0.4
 
 - (3981882) chore: update CREDITS.md — Guillermo Facundo Colunga
