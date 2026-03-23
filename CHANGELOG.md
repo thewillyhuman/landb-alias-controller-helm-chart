@@ -6,6 +6,14 @@ All notable changes to the LanDB Alias Controller Helm Chart are listed here by 
 
 ## Versions
 
+### 0.0.4
+
+- (3981882) chore: update CREDITS.md — Guillermo Facundo Colunga
+- (0f503a3) controller: update default image to v0.0.4 — Guillermo Facundo Colunga
+- (13ad520) docs: remove :5000 from Keystone OS_AUTH_URL example — Luis Pigueiras
+- (b45600e) docs: update README.md examples with latest tag — Guillermo Facundo Colunga
+- (b24f03b) chore: update CHANGELOG.md — Guillermo Facundo Colunga
+
 ### 0.0.3
 
 - (b7b92dd) chore: update controller image tag to v0.0.3 — Guillermo Facundo Colunga
