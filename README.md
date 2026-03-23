@@ -94,7 +94,7 @@ The controller binary accepts command-line flags configured via `args` in `value
 | Flag | Default | Description |
 |------|---------|-------------|
 | `--provider` | `openstack` | DNS provider to use |
-| `--ingress-node-label` | `node-role.kubernetes.io/ingress` | Label identifying ingress nodes |
+| `--ingress-node-labels` | `node-role.kubernetes.io/ingress,role=ingress` | Comma-separated label selectors identifying ingress nodes (OR). Use `key` for presence or `key=value` for exact match |
 | `--cloud-config-secret` | | Read credentials from a K8s secret (`namespace/name`) |
 | `--zap-log-level` | `info` | Log level: `debug`, `info`, `error` |
 | `--zap-devel` | `false` | Enable development-mode logging |
@@ -104,7 +104,7 @@ The controller binary accepts command-line flags configured via `args` in `value
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` | Affinity rules for pod scheduling |
-| args | list | `["--provider=openstack","--ingress-node-label=node-role.kubernetes.io/ingress","--zap-log-level=info"]` | Container arguments passed to the controller binary. The controller accepts the following flags:   --provider              - DNS provider to use (default "openstack")   --ingress-node-label    - Kubernetes label identifying ingress nodes                             (default "node-role.kubernetes.io/ingress")   --cloud-config-secret   - Read OpenStack credentials from a K8s secret (format: namespace/name)   --zap-log-level         - Log level: debug, info, error (default "info")   --zap-devel             - Enable development-mode logging (default false) |
+| args | list | `["--provider=openstack","--ingress-node-labels=node-role.kubernetes.io/ingress,role=ingress","--zap-log-level=info"]` | Container arguments passed to the controller binary. The controller accepts the following flags:   --provider              - DNS provider to use (default "openstack")   --ingress-node-labels   - Comma-separated labels identifying ingress nodes (OR logic)                             (default "node-role.kubernetes.io/ingress,role")   --cloud-config-secret   - Read OpenStack credentials from a K8s secret (format: namespace/name)   --zap-log-level         - Log level: debug, info, error (default "info")   --zap-devel             - Enable development-mode logging (default false) |
 | cloudConfig.enabled | bool | `true` | Read OpenStack credentials from the cloud-config secret in kube-system. When enabled, secretEnv/envFromSecret for OS_* variables are not required. |
 | cloudConfig.name | string | `"cloud-config"` | Name of the cloud-config secret |
 | cloudConfig.namespace | string | `"kube-system"` | Namespace of the cloud-config secret |

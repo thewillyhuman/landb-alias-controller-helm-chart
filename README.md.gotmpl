@@ -94,7 +94,7 @@ The controller binary accepts command-line flags configured via `args` in `value
 | Flag | Default | Description |
 |------|---------|-------------|
 | `--provider` | `openstack` | DNS provider to use |
-| `--ingress-node-label` | `node-role.kubernetes.io/ingress` | Label identifying ingress nodes |
+| `--ingress-node-labels` | `node-role.kubernetes.io/ingress,role=ingress` | Comma-separated label selectors identifying ingress nodes (OR). Use `key` for presence or `key=value` for exact match |
 | `--cloud-config-secret` | | Read credentials from a K8s secret (`namespace/name`) |
 | `--zap-log-level` | `info` | Log level: `debug`, `info`, `error` |
 | `--zap-devel` | `false` | Enable development-mode logging |

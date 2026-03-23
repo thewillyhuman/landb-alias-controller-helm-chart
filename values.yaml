@@ -31,14 +31,14 @@ rbac:
 # -- Container arguments passed to the controller binary.
 # The controller accepts the following flags:
 #   --provider              - DNS provider to use (default "openstack")
-#   --ingress-node-label    - Kubernetes label identifying ingress nodes
-#                             (default "node-role.kubernetes.io/ingress")
+#   --ingress-node-labels   - Comma-separated labels identifying ingress nodes (OR logic)
+#                             (default "node-role.kubernetes.io/ingress,role")
 #   --cloud-config-secret   - Read OpenStack credentials from a K8s secret (format: namespace/name)
 #   --zap-log-level         - Log level: debug, info, error (default "info")
 #   --zap-devel             - Enable development-mode logging (default false)
 args:
   - "--provider=openstack"
-  - "--ingress-node-label=node-role.kubernetes.io/ingress"
+  - "--ingress-node-labels=node-role.kubernetes.io/ingress,role=ingress"
   - "--zap-log-level=info"
 
 podMonitor:

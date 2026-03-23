@@ -56,7 +56,7 @@ tests:
           content: "--provider=openstack"
       - contains:
           path: spec.template.spec.containers[0].args
-          content: "--ingress-node-label=node-role.kubernetes.io/ingress"
+          content: "--ingress-node-labels=node-role.kubernetes.io/ingress,role=ingress"
       - contains:
           path: spec.template.spec.containers[0].args
           content: "--zap-log-level=info"
