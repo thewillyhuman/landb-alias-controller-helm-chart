@@ -3,7 +3,7 @@ replicaCount: 1
 
 image:
   # -- Container image repository
-  repository: gitlab-registry.cern.ch/gfacundo/landb-alias-controller
+  repository: registry.cern.ch/kubernetes/landb-alias-controller
   # -- Image pull policy
   pullPolicy: IfNotPresent
   # -- Overrides the image tag whose default is the chart appVersion

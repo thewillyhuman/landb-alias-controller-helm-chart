@@ -1,5 +1,5 @@
 The **LANDB Alias Controller Helm Chart** deploys the
-[LANDB Alias Controller](https://gitlab.cern.ch/gfacundo/landb-alias-controller)
+[LANDB Alias Controller](https://gitlab.cern.ch/kubernetes/networking/landb-controller/landb-alias-controller)
 on Kubernetes. This controller watches Ingress resources and automatically
 synchronizes DNS aliases to OpenStack server metadata, enabling CERN's LANDB
 system to create corresponding DNS records without manual configuration.
@@ -15,7 +15,7 @@ already exists in `kube-system`. The controller uses it by default — no
 credential configuration needed:
 
 ```bash
-helm install landb-alias-controller oci://registry.cern.ch/gfacundo/landb-alias-controller \
+helm install landb-alias-controller oci://registry.cern.ch/kubernetes/landb-alias-controller \
   --version 0.0.6 \
   --namespace kube-system
 ```
@@ -26,7 +26,7 @@ To use explicit credentials instead of cloud-config, disable `cloudConfig` and
 provide credentials via `secretEnv`:
 
 ```bash
-helm install landb-alias-controller oci://registry.cern.ch/gfacundo/landb-alias-controller \
+helm install landb-alias-controller oci://registry.cern.ch/kubernetes/landb-alias-controller \
   --version 0.0.6 \
   --namespace kube-system \
   --set cloudConfig.enabled=false \
@@ -114,7 +114,7 @@ The controller binary accepts command-line flags configured via `args` in `value
 | extraVolumes | list | `[]` | Additional volumes to add to the pod |
 | fullnameOverride | string | `""` | Override the full resource name prefix |
 | image.pullPolicy | string | `"IfNotPresent"` | Image pull policy |
-| image.repository | string | `"gitlab-registry.cern.ch/gfacundo/landb-alias-controller"` | Container image repository |
+| image.repository | string | `"registry.cern.ch/kubernetes/landb-alias-controller"` | Container image repository |
 | image.tag | string | `"v0.0.6"` | Overrides the image tag whose default is the chart appVersion |
 | imagePullSecrets | list | `[]` | Secrets for pulling images from private registries |
 | nameOverride | string | `""` | Override the default chart name used in resource names |
