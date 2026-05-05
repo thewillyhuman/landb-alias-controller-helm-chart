@@ -15,8 +15,8 @@ already exists in `kube-system`. The controller uses it by default — no
 credential configuration needed:
 
 ```bash
-helm install landb-alias-controller oci://registry.cern.ch/kubernetes/landb-alias-controller \
-  --version 0.0.6 \
+helm install {{ template "chart.name" . }} oci://registry.cern.ch/kubernetes/landb-alias-controller \
+  --version {{ template "chart.version" . }} \
   --namespace kube-system
 ```
 
@@ -26,8 +26,8 @@ To use explicit credentials instead of cloud-config, disable `cloudConfig` and
 provide credentials via `secretEnv`:
 
 ```bash
-helm install landb-alias-controller oci://registry.cern.ch/kubernetes/landb-alias-controller \
-  --version 0.0.6 \
+helm install {{ template "chart.name" . }} oci://registry.cern.ch/kubernetes/landb-alias-controller \
+  --version {{ template "chart.version" . }} \
   --namespace kube-system \
   --set cloudConfig.enabled=false \
   --set secretEnv.OS_AUTH_URL="$OS_AUTH_URL" \
