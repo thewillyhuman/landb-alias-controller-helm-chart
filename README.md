@@ -119,6 +119,7 @@ The controller binary accepts command-line flags configured via `args` in `value
 | imagePullSecrets | list | `[]` | Secrets for pulling images from private registries |
 | nameOverride | string | `""` | Override the default chart name used in resource names |
 | nodeSelector | object | `{"kubernetes.io/os":"linux"}` | Node selector for pod scheduling |
+| podAnnotations | object | `{}` | Annotations to add to the controller pod |
 | podMonitor.enabled | bool | `false` | Enable Prometheus PodMonitor for scraping /metrics |
 | podMonitor.interval | string | `""` | Scrape interval (e.g. "30s"). Uses Prometheus default if empty |
 | podMonitor.labels | object | `{}` | Additional labels for the PodMonitor (e.g. for Prometheus selector matching) |

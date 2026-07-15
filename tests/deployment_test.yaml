@@ -271,3 +271,20 @@ tests:
       - contains:
           path: spec.template.spec.containers[0].args
           content: "--cloud-config-secret=custom-ns/my-secret"
+
+  - it: should not have pod annotations by default
+    asserts:
+      - notExists:
+          path: spec.template.metadata.annotations
+
+  - it: should support custom pod annotations
+    set:
+      podAnnotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+    asserts:
+      - equal:
+          path: spec.template.metadata.annotations
+          value:
+            prometheus.io/scrape: "true"
+            prometheus.io/port: "8080"

@@ -70,6 +70,9 @@ securityContext:
       - ALL
   readOnlyRootFilesystem: true
 
+# -- Annotations to add to the controller pod
+podAnnotations: {}
+
 # -- Pod-level security context
 podSecurityContext: {}
 
