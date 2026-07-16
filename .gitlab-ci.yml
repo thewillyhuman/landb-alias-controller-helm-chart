@@ -71,7 +71,7 @@ helm_deploy:
     helm push ${CHART_NAME}-$CI_COMMIT_TAG.tgz oci://${REGISTRY_CHART_PATH}
     echo -n "${HARBOR_SIGNKEY}" | base64 -d > .sign.key
     cosign login registry.cern.ch -u ${HARBOR_USER} -p ${HARBOR_TOKEN}
-    cosign sign --key .sign.key -y "${REGISTRY_CHART_PATH}/${CHART_NAME}:${CI_COMMIT_TAG}"
+    COSIGN_PASSWORD="" cosign sign --key .sign.key -y "${REGISTRY_CHART_PATH}/${CHART_NAME}:${CI_COMMIT_TAG}"
   variables:
     CHART_NAME: landb-alias-controller
     COSIGN_PRIVATE_KEY: "$HARBOR_SIGNKEY"
