@@ -16,7 +16,7 @@ credential configuration needed:
 
 ```bash
 helm install landb-alias-controller oci://registry.cern.ch/kubernetes/charts/landb-alias-controller \
-  --version 0.0.7 \
+  --version 0.0.8 \
   --namespace kube-system
 ```
 
@@ -27,7 +27,7 @@ provide credentials via `secretEnv`:
 
 ```bash
 helm install landb-alias-controller oci://registry.cern.ch/kubernetes/charts/landb-alias-controller \
-  --version 0.0.7 \
+  --version 0.0.8 \
   --namespace kube-system \
   --set cloudConfig.enabled=false \
   --set secretEnv.OS_AUTH_URL="$OS_AUTH_URL" \

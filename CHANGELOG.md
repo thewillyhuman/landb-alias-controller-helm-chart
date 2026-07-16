@@ -6,6 +6,18 @@ All notable changes to the LanDB Alias Controller Helm Chart are listed here by 
 
 ## Versions
 
+### 0.0.8
+
+- (021434a): feat: add custom pod annotations support - Luis Pigueiras
+
+### 0.0.7
+
+- (2f9b6a3) build(ci): add cosign of chart — jack munday
+- (f551776) operator: update tag image to v0.0.7 — jack munday
+- (6cd4ec2) feat: template Chart.Version in README — jack munday
+- (82d1935) docs: move image from registry.cern.ch/gfacundo to registry.cern.ch/kubernetes — jack munday
+- (23658d6) chore: update CHANGELOG.md — Guillermo Facundo Colunga
+
 ### 0.0.6
 
 - (9f51d31) operator: update tag image to v0.0.6 — Guillermo Facundo Colunga
